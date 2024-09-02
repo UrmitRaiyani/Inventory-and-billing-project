@@ -28,7 +28,6 @@ const invoiceSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['cash', 'online'], // Drop-down options for payment method
         required: true,
     },
 });

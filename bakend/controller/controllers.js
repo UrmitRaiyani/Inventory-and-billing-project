@@ -5,6 +5,14 @@ const jwt = require('jsonwebtoken');
 const Data = require('../models/inventory');
 const moment = require('moment-timezone');
 const Invoice = require('../models/invoiceModel');
+const puppeteer = require('puppeteer');
+const fs = require('fs');
+const PDFDocument = require('pdfkit');
+const blobStream = require('blob-stream');
+const path = require('path');
+const hbs = require('handlebars');
+const { PassThrough } = require('stream');
+const pdf = require('html-pdf');
 
 module.exports.register = async (req,res) => {
 try {
@@ -258,3 +266,61 @@ exports.createInvoice = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
+module.exports.generateInvoice = async (req, res) => {
+    try {
+        const invoiceId = req.params.id;
+        const invoice = await Invoice.findById(invoiceId);
+
+        if (!invoice) {
+            return res.status(404).send('Invoice not found');
+        }
+
+        // Load your HTML template
+        let html = fs.readFileSync(path.join(__dirname, '../templates', 'invoice.html'), 'utf8');
+        const logoBase64 = fs.readFileSync(path.join(__dirname, '../templates/logo.png')).toString('base64');
+        const signatureBase64 = fs.readFileSync(path.join(__dirname, '../templates/signature.png')).toString('base64');
+        // Replace placeholders with actual data
+        html = html.replace('{{invoiceNumber}}', `${invoice._id}`);
+        html = html.replace('{{invoiceDate}}', `${invoice.date.toDateString()}`);
+        html = html.replace('{{customerName}}', `${invoice.customerName}`);
+        html = html.replace('{{mobileNumber}}', `${invoice.mobileNumber}`);
+        html = html.replace('{{paymentMethod}}', `${invoice.paymentMethod}`);
+
+        // Generate product rows
+        let productRows = '';
+        invoice.Pname.forEach((productName, index) => {
+            productRows += `
+            <tr class="item">
+                <td>${productName}</td>
+                <td>₹${invoice.Pamount[index].toFixed(2)}</td>
+            </tr>`;
+        });
+
+        html = html.replace('{{productRows}}', productRows);
+        html = html.replace('{{totalAmount}}', `${invoice.total.toFixed(2)}`);
+
+         
+        html = html.replace('logoSrc', `data:image/png;base64,${logoBase64}`);
+        html = html.replace('signatureSrc', `data:image/png;base64,${signatureBase64}`);
+
+        // Create PDF
+        const options = { format: 'Letter' };
+
+        pdf.create(html, options).toBuffer((err, buffer) => {
+            if (err) {
+                console.error('Error generating PDF:', err);
+                return res.status(500).send('Error generating PDF');
+            }
+
+            res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf');
+            res.setHeader('Content-Type', 'application/pdf');
+            res.send(buffer);
+        });
+
+    }
+    catch (error) {
+        console.error('Error generating invoice PDF:', error);
+        res.status(500).send('Error generating invoice PDF');
+    }
+}
