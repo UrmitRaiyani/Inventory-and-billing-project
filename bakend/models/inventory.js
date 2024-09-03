@@ -1,10 +1,13 @@
 const mongoose = require('mongoose')
 
 const DataSchema  = new mongoose.Schema({
-    code: { type: String, required: true, index: true },
+    code: { type: String,  index: true },
     size: { type: String},
-    startDate: { type: Date, required: true },
-    endDate: { type: Date, required: true }
+    startDate: { type: Date},
+    endDate: { type: Date},
+    color: { type: String},
+    time: { type: String},
+    status: { type: String, default: 'active' }
 });
 
 const data = mongoose.model('Data', DataSchema);

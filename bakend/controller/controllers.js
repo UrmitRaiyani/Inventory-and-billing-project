@@ -70,39 +70,86 @@ module.exports.getallData = async (req,res) => {
 
 module.exports.createData = async (req, res) => {
     try {
-        const { code, startDate, endDate, size } = req.body;
+        const { code, startDate, endDate, color, size, time } = req.body;
         const format = 'DD/MM/YYYY';
         const timezone = 'Asia/Kolkata';
 
-        const parsedStartDate = moment.tz(startDate, format, true, timezone);
-        const parsedEndDate = moment.tz(endDate, format, true, timezone);
+        const parsedStartDate = moment.tz(startDate, format, timezone).startOf('day');
+        const parsedEndDate = moment.tz(endDate, format, timezone).endOf('day');
 
         if (!parsedStartDate.isValid() || !parsedEndDate.isValid()) {
             return res.status(400).json({ message: "Invalid date format. Please use 'DD/MM/YYYY' format." });
         }
 
+        const today = moment.tz(timezone).startOf('day');
+        let status = 'pending';
+        if (parsedStartDate.isSame(today, 'day')) {
+            status = 'active';
+        } else if (parsedStartDate.isBefore(today) && parsedEndDate.isAfter(today)) {
+            status = 'active';
+        } else if (parsedEndDate.isBefore(today)) {
+            status = 'expired';
+        }
+
         const newData = new Data({
             code,
             size,
+            color,
+            time,
+            status,
             startDate: parsedStartDate.toDate(),
             endDate: parsedEndDate.toDate()
         });
 
         await newData.save();
-        res.status(201).json({ message: "Data added successfully" });;
+        res.status(201).json({ message: "Data added successfully", data:newData});
 
     } catch (error) {
-        console.error(error)
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+module.exports.updateStatus = async (req, res) => {
+    try {
+        const timezone = 'Asia/Kolkata';
+        const today = moment.tz(timezone).startOf('day');
+
+        const data = await Data.find();
+
+        data.forEach(async (item) => {
+            let status = item.status;
+            const startDate = moment(item.startDate);
+            const endDate = moment(item.endDate);
+
+            if (startDate.isSame(today)) {
+                status = 'active';
+            } else if (startDate.isBefore(today) && endDate.isAfter(today)) {
+                status = 'active';
+            } else if (endDate.isBefore(today)) {
+                status = 'expired';
+            }
+
+            if (status !== item.status) {
+                item.status = status;
+                await item.save();
+            }
+        });
+
+        res.status(200).json({ message: "Status updated successfully" });
+
+    } catch (error) {
+        console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 };
 
 module.exports.updateInventory = async (req, res) => {
         const { id } = req.params;
-        const { code, startDate, endDate } = req.body;
+        const { code, startDate, endDate,color,size,time} = req.body;
     
         // Validate input
-        if (!id || !code || !startDate || !endDate) {
+        if (!id || !code || !startDate || !endDate || !color || !size || !time) {
             return res.status(400).json({ success: false, message: "All fields are required: id, code, startDate, endDate." });
         }
     
@@ -122,7 +169,7 @@ module.exports.updateInventory = async (req, res) => {
         try {
             const updatedData = await Data.findByIdAndUpdate(
                 id,
-                { code, startDate: startDateAsDate, endDate: endDateAsDate },
+                { code,color,size,time, startDate: startDateAsDate, endDate: endDateAsDate },
                 { new: true, runValidators: true }  // runValidators ensures validation is applied during update
             );
     
