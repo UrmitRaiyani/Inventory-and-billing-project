@@ -1,0 +1,79 @@
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { useMediaQuery } from 'react-responsive';
+import { FaHome, FaClipboardList, FaCog, FaQuestionCircle, FaInfoCircle, FaBars } from 'react-icons/fa';
+import './App.css';
+import Dashboard from './components/Dashbord';
+import Register from './components/Register';
+import Login from './components/Login';
+import Product from './components/Product';
+
+const App = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+  const token = localStorage?.getItem('token');
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    window.location.href = '/login';
+  };
+
+
+  return (
+    <Router>
+      <div className="App">
+
+        {token ?
+          <>
+            <header className="App-header">
+              <div className="header-content">
+                {isMobile && <FaBars className="icon" onClick={toggleSidebar} />}
+                <div className="logo">MyAdmin</div>
+                <button className="cta-button" onClick={handleLogout}>Log Out</button>
+              </div>
+            </header>
+            <div className="App-body">
+              <nav className={`sidebar ${isMobile && !sidebarOpen ? 'hidden' : ''}`}>
+                <ul>
+                  <li><Link to="/dashboard" className="sidebar-link" onClick={closeSidebar}><FaHome /> Dashboard</Link></li>
+                  <li><Link to="/product" className="sidebar-link" onClick={closeSidebar}><FaClipboardList />Add Product</Link></li>
+                  <li><Link to="/settings" className="sidebar-link" onClick={closeSidebar}><FaCog /> Setting</Link></li>
+                  <li><Link to="/tutorial" className="sidebar-link" onClick={closeSidebar}><FaQuestionCircle /> Tutorial</Link></li>
+                  <li><Link to="/about-us" className="sidebar-link" onClick={closeSidebar}><FaInfoCircle /> About us</Link></li>
+                </ul>
+              </nav>
+              <main className="content">
+                <Routes>
+                  <Route path="/dashboard" element={<Dashboard />  } />
+                  <Route path="/product" element={<Product />} />
+                  <Route path="/login" element={<Login/>} />
+                  <Route path="/register" element={<Register/>} />
+                </Routes>
+              </main>
+            </div>
+          </>
+
+          :
+          <main className="content">
+            <Routes>
+              <Route path="/login" element={<Login/>} />
+              <Route path="/register" element={<Register/>} />
+            </Routes>
+          </main>
+        }
+      </div>
+    </Router>
+  );
+};
+
+export default App;

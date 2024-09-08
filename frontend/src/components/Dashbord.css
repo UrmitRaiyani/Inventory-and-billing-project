@@ -1,0 +1,32 @@
+.dashboard-container {
+  padding: 20px;
+  background-color: #333;
+  color: #333;
+}
+
+.title{
+  color: #ffff;
+}
+
+.dashboard-container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.dashboard-section {
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-section h2 {
+  margin-bottom: 10px;
+  color: #007bff;
+}
+
+.dashboard-section p {
+  font-size: 1.5em;
+  margin: 0;
+}
