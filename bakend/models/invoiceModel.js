@@ -20,7 +20,6 @@ const invoiceSchema = new mongoose.Schema({
     },
     mobileNumber: {
         type: String,
-        required: true,
     },
     date: {
         type: Date,
@@ -28,7 +27,6 @@ const invoiceSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        required: true,
     },
 });
 

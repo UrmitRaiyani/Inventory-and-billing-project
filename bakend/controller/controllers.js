@@ -5,14 +5,11 @@ const jwt = require('jsonwebtoken');
 const Data = require('../models/inventory');
 const moment = require('moment-timezone');
 const Invoice = require('../models/invoiceModel');
-const puppeteer = require('puppeteer');
 const fs = require('fs');
-const PDFDocument = require('pdfkit');
-const blobStream = require('blob-stream');
 const path = require('path');
-const hbs = require('handlebars');
-const { PassThrough } = require('stream');
 const pdf = require('html-pdf');
+const Dropdown = require('../models/Dropdown');
+const SubDropdown = require('../models/SubDropdown');
 
 module.exports.register = async (req,res) => {
 try {
@@ -371,3 +368,70 @@ module.exports.generateInvoice = async (req, res) => {
         res.status(500).send('Error generating invoice PDF');
     }
 }
+
+
+// Get all dropdowns
+exports.getDropdowns = async (req, res) => {
+    try {
+        const dropdowns = await Dropdown.find();
+        res.json(dropdowns);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Add a new dropdown
+exports.addDropdown = async (req, res) => {
+    const { name } = req.body;
+
+    try {
+        const existingDrop = await Dropdown.findOne({ name });
+        if (existingDrop) {
+            return res.status(400).json({ message: 'Dropdown with this name already exists' });
+        } else {
+            const newDropdown = await Dropdown.create({ name });
+            return res.status(201).json(newDropdown);
+        }
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+// Get filtered sub-dropdowns
+exports.getFilteredSubDropdowns = async (req, res) => {
+    const { mainDropdownId } = req.query;
+
+    try {
+        if (!mainDropdownId) {
+            return res.status(400).json({ message: 'Name query parameter is required' });
+        }
+
+        const subDropdowns = await SubDropdown.find({ mainDropdownId });
+        res.json(subDropdowns);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Add a new sub-dropdown
+exports.addSubDropdown = async (req, res) => {
+    const { mainDropdownId, subName, colorCode } = req.body;
+
+    try {
+        if (!mainDropdownId || !subName) {
+            return res.status(400).json({ message: 'Main dropdown ID and subName are required' });
+        }
+
+        const mainDropdown = await Dropdown.findById(mainDropdownId);
+        if (!mainDropdown) {
+            return res.status(404).json({ message: 'Main dropdown not found' });
+        }
+        const newSubDropdown = await SubDropdown.create({ mainDropdownId, subName ,colorCode});
+        return res.status(201).json(newSubDropdown);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+
+
