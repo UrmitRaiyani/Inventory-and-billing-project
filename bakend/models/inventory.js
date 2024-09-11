@@ -7,7 +7,9 @@ const DataSchema  = new mongoose.Schema({
     endDate: { type: Date},
     color: { type: String},
     time: { type: String},
-    status: { type: String, default: 'active' }
+    status: { type: String, default: 'active' },
+    mainDropdown: { type: String},
+    subName : { type: String}
 });
 
 const data = mongoose.model('Data', DataSchema);

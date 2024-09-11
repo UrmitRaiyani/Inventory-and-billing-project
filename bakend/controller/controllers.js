@@ -67,7 +67,7 @@ module.exports.getallData = async (req,res) => {
 
 module.exports.createData = async (req, res) => {
     try {
-        const { code, startDate, endDate, color, size, time } = req.body;
+        const { code, startDate, endDate, color, size, time,subName, mainDropdown } = req.body;
         const format = 'DD/MM/YYYY';
         const timezone = 'Asia/Kolkata';
 
@@ -94,6 +94,8 @@ module.exports.createData = async (req, res) => {
             color,
             time,
             status,
+            mainDropdown,
+            subName,
             startDate: parsedStartDate.toDate(),
             endDate: parsedEndDate.toDate()
         });
@@ -244,6 +246,18 @@ module.exports.getRantedInventory = async (req, res) => {
 
 module.exports.dashboard = async (req, res) => {
     try {
+         // Call the update-status API
+         const fetch = (await import('node-fetch')).default;
+         const updateResponse = await fetch('http://localhost:8000/update-status', {
+             method: 'PUT',
+             headers: {
+                 'Content-Type': 'application/json',
+                 'Authorization': req.headers.authorization // Pass the authorization header if needed
+             }
+            });
+         if (!updateResponse.ok) {
+             return res.status(updateResponse.status).json({ msg: 'Failed to update investments', status: updateResponse.status });
+         }
        // Get today's date in ISO format
        const todayStart = moment().startOf('day').toDate();
        const todayEnd = moment().endOf('day').toDate();
