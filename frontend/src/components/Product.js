@@ -1,42 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { TextField, Button, Container, Typography, Box } from '@mui/material';
+import { TextField, Button, Container, Typography, Box, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+import './Product.css';
+import { Bounce, toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Product = () => {
+  const [dropdownOptions, setDropdownOptions] = useState([]);
+  const [subDropdownOptions, setSubDropdownOptions] = useState([]);
+  const token = localStorage.getItem('token');
   const [formData, setFormData] = useState({
     code: '',
     color: '',
     endDate: '',
     size: '',
     startDate: '',
-    status: '',
-    time: ''
+    time: '',
+    mainDropdown: '',
+    subName: ''
   });
-  const token = localStorage?.getItem('token')
 
-  const [inventory, setInventory] = useState([]);
-  const [editId, setEditId] = useState(null);
+
 
   useEffect(() => {
-    if(!token)
-    {
-      window.location.href = '/login'
-    }
-    fetchInventory();
+    fetchDropdownOptions();
   }, []);
 
-  const fetchInventory = async () => {
+  const fetchDropdownOptions = async () => {
     try {
-      let response = await axios.get(`http://localhost:8000/getRantedInventory`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      setInventory(response.data);
+      const response = await axios.get('http://localhost:8000/getDropdowns');
       console.log(response);
-      
+
+      setDropdownOptions(response.data);
     } catch (error) {
-      console.error('Error fetching inventory:', error);
+      console.error('Error fetching dropdown options:', error);
+    }
+  };
+
+  const fetchSubDropdownOptions = async (selectedValue) => {
+    console.log(selectedValue);
+
+    try {
+      const response = await axios.get(`http://localhost:8000/getSubDropdowns?mainDropdownId=${selectedValue}`);
+      console.log(response.data);
+      setSubDropdownOptions(response?.data);
+    } catch (error) {
+      console.error('Error fetching sub-dropdown options:', error);
     }
   };
 
@@ -46,66 +55,71 @@ const Product = () => {
       ...formData,
       [name]: value
     });
+
+    if (name === 'mainDropdown') {
+      fetchSubDropdownOptions(value);
+    }
   };
+
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = String(d.getFullYear()).slice(-2);
+    return `${day}-${month}-${year}`;
+  };
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (editId) {
-        await axios.put(`http://localhost:8000/updateInventory/${editId}`, formData, {
-          headers: {
-            'Authorization' : `Bearer ${token}`
-          }
-        });
-      } else {
-        await axios.post(`http://localhost:8000/addData`, formData, {
-          headers: {
-            'Authorization' : `Bearer ${token}`
-          }
-        });
-      }
-      fetchInventory();
+      const formattedData = {
+        ...formData,
+        endDate: formatDate(formData.endDate),
+        startDate: formatDate(formData.startDate)
+      };
+      await axios.post('http://localhost:8000/addData', formattedData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      toast.success('Product added successfully!', {
+        position: "top-center",
+        autoClose: 1000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
       setFormData({
         code: '',
         color: '',
         endDate: '',
         size: '',
         startDate: '',
-        status: '',
-        time: ''
+        time: '',
+        mainDropdown: '',
+        subName: ''
       });
-      setEditId(null);
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('Error adding data:', error);
     }
   };
 
-  const handleEdit = (item) => {
-    setFormData(item);
-    setEditId(item.id);
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:8000/deleteInventory/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      fetchInventory();
-    } catch (error) {
-      console.error('Error deleting item:', error);
-    }
-  };
-
-  console.log(inventory);
+  console.log(formData);
   
+
+
 
   return (
     <Container maxWidth="sm">
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Inventory Form
+      <Box className="container">
+        <Typography variant="h4" gutterBottom className="titlee">
+          Add Data
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
@@ -115,6 +129,9 @@ const Product = () => {
             onChange={handleChange}
             fullWidth
             margin="normal"
+            className="textField"
+            InputLabelProps={{ className: 'textField' }}
+            InputProps={{ className: 'textField' }}
           />
           <TextField
             label="Color"
@@ -123,87 +140,99 @@ const Product = () => {
             onChange={handleChange}
             fullWidth
             margin="normal"
-          />
-          <TextField
-            label="End Date"
-            name="endDate"
-            type="datetime-local"
-            value={formData.endDate}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-          <TextField
-            label="Size"
-            name="size"
-            value={formData.size}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
+            className="textField"
+            InputLabelProps={{ className: 'textField' }}
+            InputProps={{ className: 'textField' }}
           />
           <TextField
             label="Start Date"
             name="startDate"
-            type="datetime-local"
+            type="date"
             value={formData.startDate}
             onChange={handleChange}
             fullWidth
             margin="normal"
-            InputLabelProps={{
-              shrink: true,
-            }}
+            className="textField"
+            InputLabelProps={{ shrink: true, className: 'textField' }}
+            InputProps={{ className: 'textField' }}
           />
           <TextField
-            label="Status"
-            name="status"
-            value={formData.status}
+            label="End Date"
+            name="endDate"
+            type="date"
+            value={formData.endDate}
             onChange={handleChange}
             fullWidth
             margin="normal"
+            className="textField"
+            InputLabelProps={{ shrink: true, className: 'textField' }}
+            InputProps={{ className: 'textField' }}
           />
-          <TextField
-            label="Time"
-            name="time"
-            type="time"
-            value={formData.time}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-          <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
-            {editId ? 'Update' : 'Submit'}
+          <FormControl fullWidth margin="normal" className="textField">
+            <InputLabel className="textField">Size</InputLabel>
+            <Select
+              name="size"
+              value={formData.size}
+              onChange={handleChange}
+              className="textField"
+            >
+              <MenuItem value="S">S</MenuItem>
+              <MenuItem value="M">M</MenuItem>
+              <MenuItem value="L">L</MenuItem>
+              <MenuItem value="XXL">XXL</MenuItem>
+              <MenuItem value="XXXL">XXXL</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth margin="normal" className="textField">
+            <InputLabel className="textField">Time</InputLabel>
+            <Select
+              name="time"
+              value={formData.time}
+              onChange={handleChange}
+              className="textField"
+            >
+              <MenuItem value="morning">Morning</MenuItem>
+              <MenuItem value="night">Night</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth margin="normal" className="textField">
+            <InputLabel className="textField">Dropdown</InputLabel>
+            <Select
+              name="mainDropdown"
+              value={formData.dropdown}
+              onChange={handleChange}
+              className="textField"
+            >
+              {dropdownOptions?.map((option) => (
+                <MenuItem key={option._id} value={option?._id}>
+                  {option?.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth margin="normal" className="textField">
+            <InputLabel className="textField">Sub Dropdown</InputLabel>
+            <Select
+              name="subName"
+              value={formData.subDropdown}
+              onChange={handleChange}
+              className="textField"
+            >
+              {subDropdownOptions?.map((option) => (
+                <MenuItem key={option._id} value={option?.subName}>
+                  {option.subName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button type="submit" variant="contained" className="submitButton">
+            Submit
           </Button>
         </form>
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h5" gutterBottom>
-            Inventory List
-          </Typography>
-          {inventory?.data?.map((item) => (
-            <Box key={item.id} sx={{ mb: 2 }}>
-              <Typography variant="body1">Code: {item.code}</Typography>
-              <Typography variant="body1">Color: {item.color}</Typography>
-              <Typography variant="body1">End Date: {item.endDate}</Typography>
-              <Typography variant="body1">Size: {item.size}</Typography>
-              <Typography variant="body1">Start Date: {item.startDate}</Typography>
-              <Typography variant="body1">Status: {item.status}</Typography>
-              <Typography variant="body1">Time: {item.time}</Typography>
-              <Button variant="contained" color="secondary" onClick={() => handleEdit(item)} sx={{ mt: 1, mr: 1 }}>
-                Edit
-              </Button>
-              <Button variant="contained" color="error" onClick={() => handleDelete(item.id)} sx={{ mt: 1 }}>
-                Delete
-              </Button>
-            </Box>
-          ))}
-        </Box>
+        <ToastContainer />
       </Box>
     </Container>
+
   );
 };
 

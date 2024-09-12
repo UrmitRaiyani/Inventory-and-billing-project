@@ -7,6 +7,11 @@ import Dashboard from './components/Dashbord';
 import Register from './components/Register';
 import Login from './components/Login';
 import Product from './components/Product';
+import Viewproduct from './components/Viewproduct';
+import Todaysbooking from './components/Todaysbooking';
+import Todaysdelivery from './components/Todaysdelivery';
+import Todaysreturn from './components/Todaysreturn';
+import Update from './components/Update';
 
 const App = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -47,6 +52,7 @@ const App = () => {
                 <ul>
                   <li><Link to="/dashboard" className="sidebar-link" onClick={closeSidebar}><FaHome /> Dashboard</Link></li>
                   <li><Link to="/product" className="sidebar-link" onClick={closeSidebar}><FaClipboardList />Add Product</Link></li>
+                  <li><Link to="/viewproduct" className="sidebar-link" onClick={closeSidebar}><FaClipboardList />View Product</Link></li>
                   <li><Link to="/settings" className="sidebar-link" onClick={closeSidebar}><FaCog /> Setting</Link></li>
                   <li><Link to="/tutorial" className="sidebar-link" onClick={closeSidebar}><FaQuestionCircle /> Tutorial</Link></li>
                   <li><Link to="/about-us" className="sidebar-link" onClick={closeSidebar}><FaInfoCircle /> About us</Link></li>
@@ -56,6 +62,11 @@ const App = () => {
                 <Routes>
                   <Route path="/dashboard" element={<Dashboard />  } />
                   <Route path="/product" element={<Product />} />
+                  <Route path="/viewproduct" element={<Viewproduct />} />
+                  <Route path="/update/:id" element={<Update />} />
+                  <Route path="/todaysbooking" element={<Todaysbooking />} />
+                  <Route path="/todaysdelivery" element={<Todaysdelivery />} />
+                  <Route path="/todaysreturn" element={<Todaysreturn />} />
                   <Route path="/login" element={<Login/>} />
                   <Route path="/register" element={<Register/>} />
                 </Routes>

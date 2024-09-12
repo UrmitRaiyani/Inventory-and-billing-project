@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import './Dashbord.css';
 import axios from 'axios';
+import Loader from './Loader';
 
 const Dashbord = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [todaydelivery, settodaydelivery] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [todayreturn, settodayreturn] = useState(0);
   const currentDate = new Date();
   const day = String(currentDate.getDate()).padStart(2, '0');
   const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
   const year = currentDate.getFullYear();
   const formattedDate = `${day}/${month}/${year}`;
+
 
   useEffect(() => {
     const token = localStorage?.getItem('token');
@@ -19,6 +22,7 @@ const Dashbord = () => {
     } else {
       const fetchData = async () => {
         try {
+          setLoading(true);
           let response = await axios.get(`http://localhost:8000/dashboard`, {
             headers: {
               'Authorization': `Bearer ${token}`
@@ -28,14 +32,16 @@ const Dashbord = () => {
           console.log(response.data.data);
         } catch (error) {
           console.error('Error fetching dashboard data', error);
-        }
+        } finally {
+          setLoading(false);
+      }
       };
       fetchData();
     }
   }, []);
 
-
   console.log(dashboardData);
+  
   
 
 
@@ -66,24 +72,34 @@ const Dashbord = () => {
     }
   }, [dashboardData]);
 
+
+  const todaysbooking = () => {
+    window.location.href = '/todaysbooking'
+  }
+
+  const todaysdelivery = () => {
+    window.location.href = '/todaysdelivery'
+  }
+
+  const todaysreturn = () => {
+    window.location.href = '/todaysreturn'
+  }
+
   return (
     <div className="dashboard-container">
+      {loading && <Loader />}
       <h1 className='title'>Dashboard</h1>
-      <div className="dashboard-section">
+      <div className="dashboard-section" onClick={()=>todaysbooking()}>
         <h2>Today's Booking</h2>
         <p>{todaydelivery}</p>
       </div>
-      <div className="dashboard-section">
+      <div className="dashboard-section" onClick={()=>todaysdelivery()}>
         <h2>Today's Delivery</h2>
         <p>{todaydelivery}</p>
       </div>
-      <div className="dashboard-section">
+      <div className="dashboard-section" onClick={()=>todaysreturn()}>
         <h2>Today's Return</h2>
         <p>{todayreturn}</p>
-      </div>
-      <div className="dashboard-section">
-        <h2>Total Product in Cart</h2>
-        <p>{dashboardData?.length}</p>
       </div>
     </div>
   );
