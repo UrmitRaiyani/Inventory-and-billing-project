@@ -4,8 +4,10 @@ import { TextField, Button, Container, Typography, Box, MenuItem, Select, FormCo
 import './Product.css';
 import { Bounce, toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useParams } from 'react-router-dom';
 
 const Product = () => {
+  const uid = useParams();
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [subDropdownOptions, setSubDropdownOptions] = useState([]);
   const token = localStorage.getItem('token');
@@ -19,6 +21,32 @@ const Product = () => {
     mainDropdown: '',
     subName: ''
   });
+
+
+  useEffect(() => {
+    if (uid?.id) {
+      fetchProducts();
+    }
+  }, []);
+
+  
+
+  const fetchProducts = async () => {
+    try {
+        const response = await axios.get('http://localhost:8000/getRantedInventory?page=1&limit=100', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        const products = response.data.data;
+        const matchedProduct = products.find(product => product?._id === uid?.id);
+        setFormData(matchedProduct);
+    } catch (error) {
+        console.error('Error fetching products:', error);
+    }
+};
+
+
 
 
 
@@ -57,16 +85,24 @@ const Product = () => {
     });
 
     if (name === 'mainDropdown') {
-      fetchSubDropdownOptions(value);
+      const [id, name2] = e.target.value.split('-');
+      console.log("Selected ID:", id);
+      console.log("Selected Name:", name);
+      fetchSubDropdownOptions(id);
+      setFormData({
+        ...formData,
+        [name]: name2
+      });
     }
   };
 
-  const formatDate = (date) => {
+
+  const formateDate = (date) => {
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = String(d.getFullYear()).slice(-2);
-    return `${day}-${month}-${year}`;
+    const year = String(d.getFullYear());
+    return `${day}/${month}/${year}`;
   };
 
 
@@ -74,44 +110,73 @@ const Product = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const formattedData = {
-        ...formData,
-        endDate: formatDate(formData.endDate),
-        startDate: formatDate(formData.startDate)
-      };
-      await axios.post('http://localhost:8000/addData', formattedData, {
-        headers: {
-          Authorization: `Bearer ${token}`
+        const formattedData = {
+            ...formData,
+            endDate: formateDate(formData.endDate),
+            startDate: formateDate(formData.startDate)
+        };
+
+        console.log(formattedData);
+        
+
+        if (uid?.id) {
+            // Update product
+            await axios.put(`http://localhost:8000/updateInventory/${uid?.id}`, formattedData, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success('Product updated successfully!', {
+                position: "top-center",
+                autoClose: 1000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Bounce,
+            });
+            window.location.href = '/viewproduct'
+        } else {
+            await axios.post('http://localhost:8000/addData', formattedData, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success('Product added successfully!', {
+                position: "top-center",
+                autoClose: 1000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Bounce,
+            });
         }
-      });
-      toast.success('Product added successfully!', {
-        position: "top-center",
-        autoClose: 1000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: Bounce,
-      });
-      setFormData({
-        code: '',
-        color: '',
-        endDate: '',
-        size: '',
-        startDate: '',
-        time: '',
-        mainDropdown: '',
-        subName: ''
-      });
+
+        // Reset the form
+        setFormData({
+            code: '',
+            color: '',
+            endDate: '',
+            size: '',
+            startDate: '',
+            time: '',
+            mainDropdown: '',
+            subName: ''
+        });
     } catch (error) {
-      console.error('Error adding data:', error);
+        console.error('Error submitting data:', error);
     }
-  };
+};
+
+
 
   console.log(formData);
-  
+
 
 
 
@@ -119,7 +184,7 @@ const Product = () => {
     <Container maxWidth="sm">
       <Box className="container">
         <Typography variant="h4" gutterBottom className="titlee">
-          Add Data
+          {uid?.id ? "Update Data" : "Add data"}
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
@@ -204,7 +269,7 @@ const Product = () => {
               className="textField"
             >
               {dropdownOptions?.map((option) => (
-                <MenuItem key={option._id} value={option?._id}>
+                <MenuItem key={option?._id} value={`${option?._id}-${option?.name}`}>
                   {option?.name}
                 </MenuItem>
               ))}
@@ -226,7 +291,7 @@ const Product = () => {
             </Select>
           </FormControl>
           <Button type="submit" variant="contained" className="submitButton">
-            Submit
+            {uid?.id ? "Edit" : "Submit"}
           </Button>
         </form>
         <ToastContainer />

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import { FaHome, FaClipboardList, FaCog, FaQuestionCircle, FaInfoCircle, FaBars } from 'react-icons/fa';
+import { RiAddCircleFill } from "react-icons/ri";
 import './App.css';
 import Dashboard from './components/Dashbord';
 import Register from './components/Register';
@@ -11,7 +12,7 @@ import Viewproduct from './components/Viewproduct';
 import Todaysbooking from './components/Todaysbooking';
 import Todaysdelivery from './components/Todaysdelivery';
 import Todaysreturn from './components/Todaysreturn';
-import Update from './components/Update';
+import InvoiceForm from './components/InvoiceForm';
 
 const App = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -51,11 +52,10 @@ const App = () => {
               <nav className={`sidebar ${isMobile && !sidebarOpen ? 'hidden' : ''}`}>
                 <ul>
                   <li><Link to="/dashboard" className="sidebar-link" onClick={closeSidebar}><FaHome /> Dashboard</Link></li>
-                  <li><Link to="/product" className="sidebar-link" onClick={closeSidebar}><FaClipboardList />Add Product</Link></li>
+                  <li><Link to="/product" className="sidebar-link" onClick={closeSidebar}><RiAddCircleFill />Add Product</Link></li>
                   <li><Link to="/viewproduct" className="sidebar-link" onClick={closeSidebar}><FaClipboardList />View Product</Link></li>
-                  <li><Link to="/settings" className="sidebar-link" onClick={closeSidebar}><FaCog /> Setting</Link></li>
-                  <li><Link to="/tutorial" className="sidebar-link" onClick={closeSidebar}><FaQuestionCircle /> Tutorial</Link></li>
-                  <li><Link to="/about-us" className="sidebar-link" onClick={closeSidebar}><FaInfoCircle /> About us</Link></li>
+                  <li><Link to="/addinvoice" className="sidebar-link" onClick={closeSidebar}><RiAddCircleFill />Add invoice</Link></li>
+                  <li><Link to="/adddropdown" className="sidebar-link" onClick={closeSidebar}><RiAddCircleFill />Add cloth</Link></li>
                 </ul>
               </nav>
               <main className="content">
@@ -63,7 +63,8 @@ const App = () => {
                   <Route path="/dashboard" element={<Dashboard />  } />
                   <Route path="/product" element={<Product />} />
                   <Route path="/viewproduct" element={<Viewproduct />} />
-                  <Route path="/update/:id" element={<Update />} />
+                  <Route path="/addinvoice" element={<InvoiceForm />} />
+                  <Route path="/update/:id" element={<Product />} />
                   <Route path="/todaysbooking" element={<Todaysbooking />} />
                   <Route path="/todaysdelivery" element={<Todaysdelivery />} />
                   <Route path="/todaysreturn" element={<Todaysreturn />} />
@@ -79,6 +80,7 @@ const App = () => {
             <Routes>
               <Route path="/login" element={<Login/>} />
               <Route path="/register" element={<Register/>} />
+              <Route path="*" element={<Navigate to="/login" />} />
             </Routes>
           </main>
         }
