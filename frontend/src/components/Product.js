@@ -241,11 +241,17 @@ const Product = () => {
               onChange={handleChange}
               className="textField"
             >
-              <MenuItem value="S">S</MenuItem>
-              <MenuItem value="M">M</MenuItem>
-              <MenuItem value="L">L</MenuItem>
-              <MenuItem value="XXL">XXL</MenuItem>
-              <MenuItem value="XXXL">XXXL</MenuItem>
+              <MenuItem value="30">30</MenuItem>
+              <MenuItem value="32">32</MenuItem>
+              <MenuItem value="34">34</MenuItem>
+              <MenuItem value="36">36</MenuItem>
+              <MenuItem value="38">38</MenuItem>
+              <MenuItem value="40">40</MenuItem>
+              <MenuItem value="42">42</MenuItem>
+              <MenuItem value="44">44</MenuItem>
+              <MenuItem value="46">46</MenuItem>
+              <MenuItem value="48">48</MenuItem>
+              <MenuItem value="50">50</MenuItem>
             </Select>
           </FormControl>
           <FormControl fullWidth margin="normal" className="textField">
