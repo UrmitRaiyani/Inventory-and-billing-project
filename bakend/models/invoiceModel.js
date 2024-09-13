@@ -28,6 +28,12 @@ const invoiceSchema = new mongoose.Schema({
     paymentMethod: {
         type: String,
     },
+    Delivery: {
+        type: String,
+    },
+    Return: {
+        type: String,
+    },
 });
 
 const Invoice = mongoose.model('Invoice', invoiceSchema);
