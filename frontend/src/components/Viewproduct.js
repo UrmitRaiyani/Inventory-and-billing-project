@@ -12,6 +12,7 @@ const Viewproduct = () => {
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const token = localStorage?.getItem('token')
+    const base_url = "https://option-backend.onrender.com"
 
     useEffect(() => {
         fetchProducts();
@@ -20,7 +21,7 @@ const Viewproduct = () => {
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('http://localhost:8000/getRantedInventory?page=1&limit=100', {
+            const response = await axios.get(`${base_url}/getRantedInventory?page=1&limit=100`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -44,7 +45,7 @@ const Viewproduct = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`http://localhost:8000/deleteInventory/${id}`, {
+            await axios.delete(`${base_url}/deleteInventory/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

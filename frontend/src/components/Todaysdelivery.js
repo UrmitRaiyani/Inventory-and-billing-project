@@ -10,6 +10,7 @@ function Todaysdelivery() {
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(false);
+    const base_url = "https://option-backend.onrender.com"
 
     useEffect(() => {
         const token = localStorage?.getItem('token');
@@ -19,7 +20,7 @@ function Todaysdelivery() {
             const fetchData = async () => {
                 try {
                     setLoading(true);
-                    let response = await axios.get(`http://localhost:8000/getRantedInventory`, {
+                    let response = await axios.get(`${base_url}/getRantedInventory`, {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }

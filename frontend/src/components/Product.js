@@ -11,6 +11,7 @@ const Product = () => {
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [subDropdownOptions, setSubDropdownOptions] = useState([]);
   const token = localStorage.getItem('token');
+  const base_url = "https://option-backend.onrender.com"
   const [formData, setFormData] = useState({
     code: '',
     color: '',
@@ -33,7 +34,7 @@ const Product = () => {
 
   const fetchProducts = async () => {
     try {
-        const response = await axios.get('http://localhost:8000/getRantedInventory?page=1&limit=100', {
+        const response = await axios.get(`${base_url}/getRantedInventory?page=1&limit=100`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -56,7 +57,7 @@ const Product = () => {
 
   const fetchDropdownOptions = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/getDropdowns');
+      const response = await axios.get(`${base_url}/getDropdowns`);
       console.log(response);
 
       setDropdownOptions(response.data);
@@ -69,7 +70,7 @@ const Product = () => {
     console.log(selectedValue);
 
     try {
-      const response = await axios.get(`http://localhost:8000/getSubDropdowns?mainDropdownId=${selectedValue}`);
+      const response = await axios.get(`${base_url}/getSubDropdowns?mainDropdownId=${selectedValue}`);
       console.log(response.data);
       setSubDropdownOptions(response?.data);
     } catch (error) {
@@ -121,7 +122,7 @@ const Product = () => {
 
         if (uid?.id) {
             // Update product
-            await axios.put(`http://localhost:8000/updateInventory/${uid?.id}`, formattedData, {
+            await axios.put(`${base_url}/updateInventory/${uid?.id}`, formattedData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -139,7 +140,7 @@ const Product = () => {
             });
             window.location.href = '/viewproduct'
         } else {
-            await axios.post('http://localhost:8000/addData', formattedData, {
+            await axios.post(`${base_url}/addData`, formattedData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

@@ -6,6 +6,7 @@ import './Login.css';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const base_url = "https://option-backend.onrender.com"
 
 
   useEffect(()=>{
@@ -19,7 +20,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/login', { email, password });
+      const response = await axios.post(`${base_url}/login`, { email, password });
       console.log(response);
       localStorage.setItem('token', response.data.token);
       window.location.href = '/dashboard';

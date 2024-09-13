@@ -8,7 +8,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-
+const base_url = "https://option-backend.onrender.com"
   useEffect(()=>{
     const token = localStorage?.getItem('token')
     if(token)
@@ -20,7 +20,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/register', { email, password });
+      const response = await axios.post(`${base_url}/register`, { email, password });
       console.log(response);
       window.location.href = '/login';
     } catch (error) {

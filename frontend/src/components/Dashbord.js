@@ -14,6 +14,8 @@ const Dashbord = () => {
   const year = currentDate.getFullYear();
   const formattedDate = `${day}/${month}/${year}`;
 
+  const base_url = "https://option-backend.onrender.com"
+
 
 
 
@@ -26,7 +28,7 @@ const Dashbord = () => {
       const fetchData = async () => {
         try {
           setLoading(true);
-          let response = await axios.get(`http://localhost:8000/dashboard`, {
+          let response = await axios.get(`${base_url}/dashboard`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }

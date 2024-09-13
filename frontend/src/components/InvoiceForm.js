@@ -11,6 +11,8 @@ const InvoiceForm = () => {
     description: ''
   });
 
+  const base_url = "https://option-backend.onrender.com"
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setInvoiceData({
@@ -23,7 +25,7 @@ const InvoiceForm = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
-      const response = await axios.post('http://localhost:8000/invoices', invoiceData, {
+      const response = await axios.post(`${base_url}/invoices`, invoiceData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
