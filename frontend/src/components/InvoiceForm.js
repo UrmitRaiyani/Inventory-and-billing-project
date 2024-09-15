@@ -55,11 +55,25 @@ const InvoiceForm = () => {
     });
   };
 
+  const formateDate = (date) => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = String(d.getFullYear());
+    return `${day}/${month}/${year}`;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const updatedInvoiceData = {
+        ...invoiceData,
+        Pamount: invoiceData.Pamount.map(amount => Number(amount)), // Convert each Pamount value to a number
+        Return: formateDate(invoiceData.Return),
+        Delivery: formateDate(invoiceData.Delivery)
+      };
       const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
-      const response = await axios.post(`${base_url}/invoices`, invoiceData, {
+      const response = await axios.post(`${base_url}/invoices`,updatedInvoiceData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -146,22 +160,26 @@ const InvoiceForm = () => {
               <MenuItem value="Bank">Bank</MenuItem>
               
             </Select>
-          </FormControl>
+      </FormControl>
       <TextField
-        label="Delivery"
-        name="Delivery"
-        value={invoiceData.Delivery}
-        onChange={handleChange}
-        fullWidth
-        margin="normal"
+            label="Delivery Date"
+            name="Delivery"
+            type="date"
+            value={invoiceData.Delivery}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
       />
       <TextField
-        label="Return"
-        name="Return"
-        value={invoiceData.Return}
-        onChange={handleChange}
-        fullWidth
-        margin="normal"
+            label="Return Date"
+            name="Return"
+            type="date"
+            value={invoiceData.Return}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
       />
       <TextField
         type='hidden'
