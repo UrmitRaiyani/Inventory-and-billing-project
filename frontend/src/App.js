@@ -56,7 +56,6 @@ const App = () => {
                   <li><Link to="/product" className="sidebar-link" onClick={closeSidebar}><RiAddCircleFill />Add Product</Link></li>
                   <li><Link to="/viewproduct" className="sidebar-link" onClick={closeSidebar}><FaClipboardList />View Product</Link></li>
                   <li><Link to="/addinvoice" className="sidebar-link" onClick={closeSidebar}><RiAddCircleFill />Add invoice</Link></li>
-                  <li><Link to="/adddropdown" className="sidebar-link" onClick={closeSidebar}><RiAddCircleFill />Add cloth</Link></li>
                   <li><Link to="/InvoiceData" className="sidebar-link" onClick={closeSidebar}><RiAddCircleFill />Invoices</Link></li>
                 </ul>
               </nav>
