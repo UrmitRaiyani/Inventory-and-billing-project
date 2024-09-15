@@ -21,7 +21,6 @@ const base_url = "https://option-backend.onrender.com"
     e.preventDefault();
     try {
       const response = await axios.post(`${base_url}/register`, { email, password });
-      console.log(response);
       window.location.href = '/login';
     } catch (error) {
       alert('Invalid credentials');

@@ -58,7 +58,6 @@ const Product = () => {
   const fetchDropdownOptions = async () => {
     try {
       const response = await axios.get(`${base_url}/getDropdowns`);
-      console.log(response);
 
       setDropdownOptions(response.data);
     } catch (error) {
@@ -67,11 +66,9 @@ const Product = () => {
   };
 
   const fetchSubDropdownOptions = async (selectedValue) => {
-    console.log(selectedValue);
 
     try {
       const response = await axios.get(`${base_url}/getSubDropdowns?mainDropdownId=${selectedValue}`);
-      console.log(response.data);
       setSubDropdownOptions(response?.data);
     } catch (error) {
       console.error('Error fetching sub-dropdown options:', error);
@@ -87,8 +84,6 @@ const Product = () => {
 
     if (name === 'mainDropdown') {
       const [id, name2] = e.target.value.split('-');
-      console.log("Selected ID:", id);
-      console.log("Selected Name:", name);
       fetchSubDropdownOptions(id);
       setFormData({
         ...formData,
@@ -117,7 +112,6 @@ const Product = () => {
             startDate: formateDate(formData.startDate)
         };
 
-        console.log(formattedData);
         
 
         if (uid?.id) {
@@ -176,7 +170,6 @@ const Product = () => {
 
 
 
-  console.log(formData);
 
 
 

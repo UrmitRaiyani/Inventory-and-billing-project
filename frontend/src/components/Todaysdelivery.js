@@ -25,7 +25,6 @@ function Todaysdelivery() {
                             'Authorization': `Bearer ${token}`
                         }
                     });
-                    console.log('API Response:', response.data.data); // Log the API response
                     setDashboardData(response.data.data);
                 } catch (error) {
                     console.error('Error fetching dashboard data', error);
@@ -50,16 +49,13 @@ function Todaysdelivery() {
             const today = formatDate(new Date());
             const filtered = dashboardData.filter(item => {
                 const itemStartDate = formatDate(item.startDate);
-                console.log('Item Start Date:', itemStartDate);
                 return itemStartDate === today;
             });
-            console.log('Filtered Data:', today); // Log the filtered data
             setFilteredData(filtered);
             setFilteredProducts(filtered);
         }
     }, [dashboardData]);
 
-    console.log(filteredData);
 
     const handleSearch = (e) => {
         const query = e.target.value.toLowerCase();

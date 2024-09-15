@@ -81,7 +81,6 @@ const Viewproduct = () => {
         setFilteredProducts(filtered);
     };
 
-    console.log(products);
     
     
 

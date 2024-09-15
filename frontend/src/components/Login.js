@@ -21,7 +21,6 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await axios.post(`${base_url}/login`, { email, password });
-      console.log(response);
       localStorage.setItem('token', response.data.token);
       window.location.href = '/dashboard';
     } catch (error) {
