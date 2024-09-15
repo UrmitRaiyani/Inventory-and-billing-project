@@ -13,6 +13,7 @@ import Todaysbooking from './components/Todaysbooking';
 import Todaysdelivery from './components/Todaysdelivery';
 import Todaysreturn from './components/Todaysreturn';
 import InvoiceForm from './components/InvoiceForm';
+import InvoiceList from './components/InvoicesList';
 
 const App = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -56,6 +57,7 @@ const App = () => {
                   <li><Link to="/viewproduct" className="sidebar-link" onClick={closeSidebar}><FaClipboardList />View Product</Link></li>
                   <li><Link to="/addinvoice" className="sidebar-link" onClick={closeSidebar}><RiAddCircleFill />Add invoice</Link></li>
                   <li><Link to="/adddropdown" className="sidebar-link" onClick={closeSidebar}><RiAddCircleFill />Add cloth</Link></li>
+                  <li><Link to="/InvoiceData" className="sidebar-link" onClick={closeSidebar}><RiAddCircleFill />Invoices</Link></li>
                 </ul>
               </nav>
               <main className="content">
@@ -70,6 +72,7 @@ const App = () => {
                   <Route path="/todaysreturn" element={<Todaysreturn />} />
                   <Route path="/login" element={<Login/>} />
                   <Route path="/register" element={<Register/>} />
+                  <Route path="/InvoiceData" element={<InvoiceList />} />
                 </Routes>
               </main>
             </div>
