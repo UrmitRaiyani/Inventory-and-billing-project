@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Button, Container, Table, TableBody, TableCell, TableHead, TableRow, Paper, TextField } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css'; 
+import Loader from './Loader';
 
 const InvoicesList = () => {
   const [invoices, setInvoices] = useState([]);
@@ -10,7 +12,8 @@ const InvoicesList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const base_url = "http://localhost:8000"; // Replace with your backend URL
+  const [loading, setLoading] = useState(false);
+  const base_url = "https://option-backend.onrender.com"; // Replace with your backend URL
 
   const token = localStorage.getItem('token');
   useEffect(() => {
@@ -31,13 +34,14 @@ const InvoicesList = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(searchTerm);
-    }, 100);
+    }, 1000);
     return () => clearTimeout(handler);
   }, [searchTerm]);
 
   // Fetch invoices with pagination and search term
   const fetchInvoices = async (page, search = '') => {
     try {
+      setLoading(true);
       const response = await axios.get(`${base_url}/InvoiceData`, {
         params: {
           page,
@@ -50,9 +54,11 @@ const InvoicesList = () => {
       });
       setInvoices(response.data.data);
       setTotalPages(response.data.totalPages);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching invoices:', error);
       toast.error('Error fetching invoices');
+      setLoading(false);
     }
   };
 
@@ -62,6 +68,7 @@ const InvoicesList = () => {
 
   const handleDownload = async (invoiceId) => {
     try {
+      setLoading(true);
       const response = await axios.get(`${base_url}/generateInvoice/${invoiceId}`, {
         responseType: 'blob',
         headers: {
@@ -75,20 +82,24 @@ const InvoicesList = () => {
       document.body.appendChild(link);
       link.click();
       link.remove();
+      setLoading(false);
       toast.success('Invoice downloaded successfully',);
     } catch (error) {
       console.error('Error downloading invoice:', error);
       toast.error('Error downloading invoice');
+      setLoading(false);
     }
   };
 
   // Handle delete button click
   const handleDelete = async (invoiceId) => {
     try {
+      setLoading(true);
       await axios.delete(`${base_url}/invoiceDelete/${invoiceId}`, {});
       // Refresh the invoice list after deletion
       fetchInvoices(page, debouncedSearch);
       toast.success('Invoice deleted successfully');
+      setLoading(false);
     } catch (error) {
       console.error('Error deleting invoice:', error);
       toast.error('Error deleting invoice');
@@ -97,6 +108,7 @@ const InvoicesList = () => {
 
   return (
     <Container>
+      {loading && <Loader />}
       <ToastContainer autoClose={1000}/>
       <Paper>
         {/* Search input */}
