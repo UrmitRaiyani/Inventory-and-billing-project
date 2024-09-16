@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Container, Typography, Box, TextField } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Container, Typography, Box, TextField, Pagination } from '@mui/material';
 import Loader from './Loader';
 import { Bounce, toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -11,26 +11,29 @@ const Viewproduct = () => {
     const [loading, setLoading] = useState(false);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1); // For tracking total pages
     const token = localStorage?.getItem('token')
     const base_url = "https://option-backend.onrender.com"
 
     useEffect(() => {
-        fetchProducts();
-    }, []);
+        fetchProducts(page);
+    }, [page]);
 
-    const fetchProducts = async () => {
+    const fetchProducts = async (currentPage) => {
         try {
             setLoading(true);
-            const response = await axios.get(`${base_url}/getRantedInventory?page=1&limit=100`, {
+            const response = await axios.get(`${base_url}/getRantedInventory?page=${currentPage}&limit=25`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
+            setLoading(false);
             setProducts(response.data.data);
             setFilteredProducts(response.data.data);
+            setTotalPages(response.data.totalPages); // Assuming the backend sends total pages
         } catch (error) {
             console.error('Error fetching products:', error);
-        } finally {
             setLoading(false);
         }
     };
@@ -50,8 +53,8 @@ const Viewproduct = () => {
                     Authorization: `Bearer ${token}`
                 }
             });
-            fetchProducts();
-            toast.success('Product Delete successfully!', {
+            fetchProducts(page); // Re-fetch products for the current page
+            toast.success('Product deleted successfully!', {
                 position: "top-center",
                 autoClose: 1000,
                 hideProgressBar: true,
@@ -61,14 +64,14 @@ const Viewproduct = () => {
                 progress: undefined,
                 theme: "dark",
                 transition: Bounce,
-                });
+            });
         } catch (error) {
             console.error('Error deleting product:', error);
         }
     };
 
     const handleUpdate = (id) => {
-        window.location.href = `/update/${id}`
+        window.location.href = `/update/${id}`;
     };
 
     const handleSearch = (e) => {
@@ -81,21 +84,22 @@ const Viewproduct = () => {
         setFilteredProducts(filtered);
     };
 
-    
-    
+    const handlePageChange = (event, value) => {
+        setPage(value); // Update page number
+    };
 
     const getStatusColor = (status) => {
         switch (status) {
-          case 'pending':
-            return 'warning';
-          case 'active':
-            return 'success';
-          case 'expired':
-            return 'error';
-          default:
-            return 'default';
+            case 'pending':
+                return 'warning';
+            case 'active':
+                return 'success';
+            case 'expired':
+                return 'error';
+            default:
+                return 'default';
         }
-      };
+    };
 
     return (
         <Container maxWidth="lg">
@@ -115,6 +119,7 @@ const Viewproduct = () => {
                     InputProps={{
                         style: {
                             backgroundColor: 'white',
+                            color: 'white'
                         }
                     }}
                 />
@@ -163,6 +168,14 @@ const Viewproduct = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                    <Pagination 
+                        count={totalPages} 
+                        page={page} 
+                        onChange={handlePageChange} 
+                        color="primary"
+                    />
+                </Box>
                 <ToastContainer />
             </Box>
         </Container>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Button, Container, Table, TableBody, TableCell, TableHead, TableRow, Paper, TextField } from '@mui/material';
+import { Button, Container, Table, TableBody,TableContainer, TableCell, TableHead, TableRow, Paper, TextField,Box } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-toastify/dist/ReactToastify.css'; 
@@ -52,13 +52,13 @@ const InvoicesList = () => {
           Authorization: `Bearer ${token}`
         }
       });
+      setLoading(false);
       setInvoices(response.data.data);
       setTotalPages(response.data.totalPages);
-      setLoading(false);
     } catch (error) {
       console.error('Error fetching invoices:', error);
       toast.error('Error fetching invoices');
-      setLoading(false);
+     
     }
   };
 
@@ -87,7 +87,7 @@ const InvoicesList = () => {
     } catch (error) {
       console.error('Error downloading invoice:', error);
       toast.error('Error downloading invoice');
-      setLoading(false);
+      
     }
   };
 
@@ -98,8 +98,8 @@ const InvoicesList = () => {
       await axios.delete(`${base_url}/invoiceDelete/${invoiceId}`, {});
       // Refresh the invoice list after deletion
       fetchInvoices(page, debouncedSearch);
-      toast.success('Invoice deleted successfully');
       setLoading(false);
+      toast.success('Invoice deleted successfully');
     } catch (error) {
       console.error('Error deleting invoice:', error);
       toast.error('Error deleting invoice');
@@ -107,10 +107,10 @@ const InvoicesList = () => {
   };
 
   return (
-    <Container>
+    <Container maxWidth="lg">
       {loading && <Loader />}
+      <Box sx={{ mt: 4 }}>
       <ToastContainer autoClose={1000}/>
-      <Paper>
         {/* Search input */}
         <TextField
           label="Search by Customer Name"
@@ -119,7 +119,13 @@ const InvoicesList = () => {
           margin="normal"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            style: {
+                backgroundColor: 'white',
+            }
+        }}
         />
+        <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
@@ -158,7 +164,7 @@ const InvoicesList = () => {
             ))}
           </TableBody>
         </Table>
-      </Paper>
+        </TableContainer>
       <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between' }}>
         <Button
           variant="contained"
@@ -176,6 +182,7 @@ const InvoicesList = () => {
           Next
         </Button>
       </div>
+      </Box>
     </Container>
   );
 };

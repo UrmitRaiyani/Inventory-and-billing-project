@@ -34,17 +34,14 @@ const Dashbord = () => {
             }
           });
           setDashboardData(response.data.data);
+          setLoading(false);
         } catch (error) {
           console.error('Error fetching dashboard data', error);
-        } finally {
-          setLoading(false);
-      }
+        }
       };
       fetchData();
     }
   }, []);
-
-  console.log(dashboardData);
   
   
 
