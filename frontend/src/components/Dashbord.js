@@ -22,7 +22,7 @@ const Dashbord = () => {
       const fetchData = async () => {
         try {
           setLoading(true);
-          let response = await axios.get(`${base_url}/dashboard`, {
+          const response = await axios.get(`${base_url}/dashboard`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -68,10 +68,10 @@ const Dashbord = () => {
     <div className="dashboard-container">
       {loading && <Loader />}
       <h1 className='title'>Dashboard</h1>
-      <div className="dashboard-section" onClick={todaysbooking}>
+      {/* <div className="dashboard-section" onClick={todaysbooking}>
         <h2>Today's Booking</h2>
         <p>{todaydelivery}</p>
-      </div>
+      </div> */}
       <div className="dashboard-section" onClick={todaysdelivery}>
         <h2>Today's Delivery</h2>
         <p>{todaydelivery}</p>

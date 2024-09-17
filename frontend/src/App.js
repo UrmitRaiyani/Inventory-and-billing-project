@@ -66,7 +66,7 @@ const App = () => {
                   <Route path="/viewproduct" element={<Viewproduct />} />
                   <Route path="/addinvoice" element={<InvoiceForm />} />
                   <Route path="/update/:id" element={<Product />} />
-                  <Route path="/todaysbooking" element={<Todaysbooking />} />
+                  {/* <Route path="/todaysbooking" element={<Todaysbooking />} /> */}
                   <Route path="/todaysdelivery" element={<Todaysdelivery />} />
                   <Route path="/todaysreturn" element={<Todaysreturn />} />
                   <Route path="/login" element={<Login/>} />
