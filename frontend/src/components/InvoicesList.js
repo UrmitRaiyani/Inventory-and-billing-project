@@ -58,7 +58,7 @@ const InvoicesList = () => {
     } catch (error) {
       console.error('Error fetching invoices:', error);
       toast.error('Error fetching invoices');
-     
+      setLoading(false);
     }
   };
 
@@ -87,7 +87,7 @@ const InvoicesList = () => {
     } catch (error) {
       console.error('Error downloading invoice:', error);
       toast.error('Error downloading invoice');
-      
+      setLoading(false);
     }
   };
 
@@ -103,6 +103,7 @@ const InvoicesList = () => {
     } catch (error) {
       console.error('Error deleting invoice:', error);
       toast.error('Error deleting invoice');
+      setLoading(false);
     }
   };
 

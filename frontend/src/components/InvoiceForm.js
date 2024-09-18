@@ -86,10 +86,10 @@ const InvoiceForm = () => {
         }
       });
      
+      setLoading(false);
       // Store the current invoice ID from the response
       setCurrentInvoiceId(response.data._id); // Assuming response has an _id field for the invoice
       setOpen(true); // Open the dialog
-      setLoading(false);
       toast.success('Invoice Submitted successfully!', {
         position: "top-center",
         autoClose: 2000,
@@ -112,6 +112,7 @@ const InvoiceForm = () => {
       });
     } catch (error) {
       console.error('Error creating invoice:', error);
+      setLoading(false);
     }
   };
 
@@ -164,6 +165,7 @@ const InvoiceForm = () => {
 
     } catch (error) {
       console.error('Error downloading invoice:', error);
+      setLoading(false);
     }
   };
   
